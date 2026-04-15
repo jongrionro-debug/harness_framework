@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f1e8;
+  --foreground: #1c1a17;
+  --surface: #fffdf8;
+  --surface-alt: #f3ebdd;
+  --border: #e5dac8;
+  --accent: #fee500;
+  --accent-surface: #fff3a4;
+  --accent-ink: #1f1a17;
+  --text-primary: #1c1a17;
+  --text-secondary: #6b665e;
+  --success: #2f9e5b;
+  --warning: #c9831a;
+  --danger: #d95c4a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-surface: var(--accent-surface);
+  --color-accent-ink: var(--accent-ink);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-ui);
+  --shadow-panel: 0 8px 24px rgba(60, 44, 20, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    var(--font-ui),
+    "Pretendard Variable",
+    "SUIT Variable",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
