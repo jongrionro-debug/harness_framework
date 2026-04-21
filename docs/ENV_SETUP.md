@@ -45,11 +45,14 @@ DATABASE_URL=
 
 ```bash
 npm install
+npm run db:up
 npm run db:migrate
 npm run dev
 ```
 
 스키마 변경이 포함된 브랜치를 새로 받았을 때는 `npm run dev`보다 `npm run db:migrate`를 먼저 실행해야 한다. 이 레포는 인증과 멤버십 조회가 DB 컬럼 형태에 직접 의존하므로, 마이그레이션이 늦으면 로그인이나 온보딩 경로가 바로 깨질 수 있다.
+
+현재 저장소에는 `docker-compose.yml`이 포함되어 있으므로, 팀원들은 로컬 PostgreSQL 설치 대신 `npm run db:up`으로 같은 DB 환경을 맞출 수 있다.
 
 아직 없어도 되는 것:
 
