@@ -144,6 +144,38 @@ describe("submission services", () => {
     ).rejects.toThrow("배정된 세션만 제출하거나 수정할 수 있습니다.");
   });
 
+  it("rejects teacher submission until the session has at least one snapshot", async () => {
+    await expect(
+      saveTeacherSessionSubmission(
+        {
+          organizationId: "org-1",
+          teacherId: "teacher-1",
+          sessionId: "session-1",
+          lessonJournal: "오늘 수업 내용을 충분히 적어 둡니다.",
+          attendance: [],
+        },
+        {
+          findTeacherSessionWorkspace: async () => ({
+            id: "session-1",
+            teacherId: "teacher-1",
+            sessionDate: "2026-04-15",
+            className: "A반",
+            villageName: "동네 배움터",
+            programName: "문해",
+            submittedAt: null,
+            snapshots: [],
+          }),
+          listAttendanceRecords: async () => [],
+          findLessonJournal: async () => null,
+          listAttachments: async () => [],
+          upsertAttendanceRecords: async () => undefined,
+          upsertLessonJournal: async () => undefined,
+          updateSessionSubmission: async () => undefined,
+        },
+      ),
+    ).rejects.toThrow("운영자가 참여자를 추가해야 제출할 수 있습니다.");
+  });
+
   it("fails final submission when stored attachment metadata is invalid", async () => {
     await expect(
       saveTeacherSessionSubmission(

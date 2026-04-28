@@ -76,7 +76,7 @@ export function OnboardingForm() {
             <ul className="mt-2 space-y-2 text-sm leading-6 text-[var(--color-text-secondary)]">
               <li>새 기관과 첫 마을을 직접 생성하기</li>
               <li>초대 토큰으로 기존 기관 membership 받기</li>
-              <li>가입 이후 설정 화면에서 프로그램, 수업, 강사 관리 이어가기</li>
+              <li>가입 이후 설정 화면에서 사업, 수업, 강사 관리 이어가기</li>
             </ul>
           </div>
         </aside>

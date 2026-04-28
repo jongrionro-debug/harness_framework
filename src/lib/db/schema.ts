@@ -279,7 +279,6 @@ export const sessions = pgTable(
       .notNull()
       .references(() => classes.id, { onDelete: "restrict" }),
     teacherId: uuid("teacher_id")
-      .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
     sessionDate: date("session_date").notNull(),
     submittedAt: timestamp("submitted_at", { withTimezone: true }),

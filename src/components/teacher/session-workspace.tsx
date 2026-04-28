@@ -66,6 +66,7 @@ export function TeacherSessionWorkspaceScreen({
     uploadAction,
     initialState,
   );
+  const canSubmit = session.snapshots.length > 0;
 
   return (
     <main className="flex min-h-screen flex-1 flex-col bg-[var(--color-background)]">
@@ -101,34 +102,41 @@ export function TeacherSessionWorkspaceScreen({
                 세션 생성 시점의 출석 대상 명단을 기준으로 상태를 남깁니다.
               </p>
               <div className="mt-5 space-y-3">
-                {session.snapshots.map((participant) => (
-                  <div
-                    key={participant.id}
-                    className="rounded-[20px] bg-[var(--color-surface-alt)] px-4 py-4"
-                  >
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-                          {participant.fullName}
-                        </p>
-                        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                          {participant.note ?? "메모 없음"}
-                        </p>
+                {session.snapshots.length ? (
+                  session.snapshots.map((participant) => (
+                    <div
+                      key={participant.id}
+                      className="rounded-[20px] bg-[var(--color-surface-alt)] px-4 py-4"
+                    >
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+                            {participant.fullName}
+                          </p>
+                          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                            {participant.note ?? "메모 없음"}
+                          </p>
+                        </div>
+                        <select
+                          name={`attendance:${participant.id}`}
+                          defaultValue={participant.attendanceStatus}
+                          className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none"
+                        >
+                          {attendanceOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                      <select
-                        name={`attendance:${participant.id}`}
-                        defaultValue={participant.attendanceStatus}
-                        className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text-primary)] outline-none"
-                      >
-                        {attendanceOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="rounded-[20px] bg-[var(--color-surface-alt)] px-4 py-4 text-sm leading-6 text-[var(--color-text-secondary)]">
+                    아직 참여자가 없습니다. 운영자가 세션에 참여자를 추가하면
+                    제출할 수 있습니다.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -146,9 +154,17 @@ export function TeacherSessionWorkspaceScreen({
                 className="mt-4 min-h-56 w-full rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-4 text-sm leading-6 text-[var(--color-text-primary)] outline-none"
                 placeholder="오늘 수업에서 진행한 활동, 반응, 다음 시간 메모를 남겨 주세요."
               />
-              <button className="mt-4 w-full rounded-full bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-accent-ink)]">
+              <button
+                disabled={!canSubmit}
+                className="mt-4 w-full rounded-full bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-accent-ink)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 {session.submittedAt ? "수정 저장" : "최종 제출"}
               </button>
+              {!canSubmit ? (
+                <p className="mt-4 rounded-[18px] bg-[var(--color-surface-alt)] px-4 py-3 text-sm leading-6 text-[var(--color-text-secondary)]">
+                  운영자가 참여자를 추가해야 제출할 수 있습니다.
+                </p>
+              ) : null}
               {submitState.message ? (
                 <p className="mt-4 rounded-[18px] bg-[var(--color-surface-alt)] px-4 py-3 text-sm leading-6 text-[var(--color-text-secondary)]">
                   {submitState.message}

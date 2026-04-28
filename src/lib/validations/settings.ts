@@ -5,7 +5,7 @@ export const villageSchema = z.object({
 });
 
 export const programSchema = z.object({
-  name: z.string().trim().min(2, "프로그램 이름을 2자 이상 입력해 주세요."),
+  name: z.string().trim().min(2, "사업 이름을 2자 이상 입력해 주세요."),
   description: z
     .string()
     .trim()

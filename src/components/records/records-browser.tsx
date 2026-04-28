@@ -7,7 +7,7 @@ type RecordSummary = {
   villageName: string;
   programName: string;
   teacherName: string | null;
-  teacherEmail: string;
+  teacherEmail: string | null;
   submittedAt: Date | null;
   updatedAt: Date;
 };
@@ -58,7 +58,7 @@ export function RecordsBrowser({
             <input
               name="search"
               defaultValue={filters.search}
-              placeholder="수업, 프로그램, 마을, 강사 검색"
+              placeholder="수업, 사업, 마을, 강사 검색"
               className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
             />
             <select
@@ -76,7 +76,7 @@ export function RecordsBrowser({
               defaultValue={filters.program ?? ""}
               className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
             >
-              <option value="">전체 프로그램</option>
+              <option value="">전체 사업</option>
               {filterOptions.programs.map((program) => (
                 <option key={program} value={program}>
                   {program}
@@ -105,10 +105,9 @@ export function RecordsBrowser({
           <div className="space-y-3">
             {rows.length ? (
               rows.map((row) => (
-                <Link
+                <div
                   key={row.id}
-                  href={`/records/${row.id}`}
-                  className="block rounded-[22px] bg-[var(--color-surface-alt)] px-4 py-4 transition-transform hover:-translate-y-0.5"
+                  className="rounded-[22px] bg-[var(--color-surface-alt)] px-4 py-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -129,9 +128,23 @@ export function RecordsBrowser({
                     </div>
                   </div>
                   <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
-                    {row.teacherName ?? row.teacherEmail}
+                    {row.teacherName ?? row.teacherEmail ?? "강사 미할당"}
                   </p>
-                </Link>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link
+                      href={`/records/${row.id}`}
+                      className="rounded-full bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold text-[var(--color-text-primary)]"
+                    >
+                      기록 상세
+                    </Link>
+                    <Link
+                      href={`/dashboard/sessions/${row.id}`}
+                      className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold text-[var(--color-text-primary)]"
+                    >
+                      세션 관리
+                    </Link>
+                  </div>
+                </div>
               ))
             ) : (
               <p className="rounded-[22px] bg-[var(--color-surface-alt)] px-4 py-5 text-sm leading-6 text-[var(--color-text-secondary)]">

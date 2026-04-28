@@ -34,7 +34,7 @@ type SessionTeacherAssignmentRecord = {
 
 type TeacherSessionRecord = {
   id: string;
-  teacherId: string;
+  teacherId: string | null;
   sessionDate: string;
   className: string;
   villageName: string;
@@ -181,6 +181,10 @@ function createSessionRepository(): SessionRepository {
       return session;
     },
     async insertSessionParticipantSnapshots(values) {
+      if (!values.length) {
+        return;
+      }
+
       await db.insert(sessionParticipantSnapshots).values(values);
     },
   };
@@ -281,21 +285,16 @@ export async function createSessionRecord(
     villageId: string;
     programId: string;
     classId: string;
-    teacherId: string;
+    teacherId?: string | null;
     sessionDate: string;
   },
   repository: SessionRepository = createSessionRepository(),
 ) {
-  const [hasVillage, hasProgram, classRecord, teacherAssignment, participantRows] =
+  const [hasVillage, hasProgram, classRecord, participantRows] =
     await Promise.all([
       repository.hasVillageRecord(input.organizationId, input.villageId),
       repository.hasProgramRecord(input.organizationId, input.programId),
       repository.findClassRecord(input.organizationId, input.classId),
-      repository.findTeacherAssignment(
-        input.organizationId,
-        input.classId,
-        input.teacherId,
-      ),
       repository.listParticipantsForClass(input.organizationId, input.classId),
     ]);
 
@@ -304,7 +303,7 @@ export async function createSessionRecord(
   }
 
   if (!hasProgram) {
-    throw new Error("선택한 프로그램 정보를 찾을 수 없습니다.");
+    throw new Error("선택한 사업 정보를 찾을 수 없습니다.");
   }
 
   if (!classRecord) {
@@ -312,9 +311,7 @@ export async function createSessionRecord(
   }
 
   if (!classRecord.programId) {
-    throw new Error(
-      "선택한 수업에 프로그램 연결이 없어 세션을 만들 수 없습니다.",
-    );
+    throw new Error("선택한 수업에 사업 연결이 없어 세션을 만들 수 없습니다.");
   }
 
   if (!classRecord.villageId) {
@@ -322,19 +319,23 @@ export async function createSessionRecord(
   }
 
   if (classRecord.programId !== input.programId) {
-    throw new Error("선택한 수업과 프로그램 조합이 맞지 않습니다.");
+    throw new Error("선택한 수업과 사업 조합이 맞지 않습니다.");
   }
 
   if (classRecord.villageId !== input.villageId) {
     throw new Error("선택한 수업과 마을 조합이 맞지 않습니다.");
   }
 
-  if (!teacherAssignment) {
-    throw new Error("선택한 강사가 이 수업에 배정되어 있지 않습니다.");
-  }
+  if (input.teacherId) {
+    const teacherAssignment = await repository.findTeacherAssignment(
+      input.organizationId,
+      input.classId,
+      input.teacherId,
+    );
 
-  if (!participantRows.length) {
-    throw new Error("참여자 명단이 없어 세션을 만들 수 없습니다.");
+    if (!teacherAssignment) {
+      throw new Error("선택한 강사가 이 수업에 배정되어 있지 않습니다.");
+    }
   }
 
   const session = await repository.insertSession({
@@ -342,17 +343,19 @@ export async function createSessionRecord(
     villageId: input.villageId,
     programId: input.programId,
     classId: input.classId,
-    teacherId: input.teacherId,
+    teacherId: input.teacherId || null,
     sessionDate: input.sessionDate,
   });
 
-  await repository.insertSessionParticipantSnapshots(
-    buildSessionParticipantSnapshots(
-      session.id,
-      session.organizationId,
-      participantRows,
-    ),
-  );
+  if (participantRows.length) {
+    await repository.insertSessionParticipantSnapshots(
+      buildSessionParticipantSnapshots(
+        session.id,
+        session.organizationId,
+        participantRows,
+      ),
+    );
+  }
 
   return {
     sessionId: session.id,
@@ -430,7 +433,7 @@ export async function listSessionDashboardData(organizationId: string) {
       .innerJoin(classes, eq(sessions.classId, classes.id))
       .innerJoin(villages, eq(sessions.villageId, villages.id))
       .innerJoin(programs, eq(sessions.programId, programs.id))
-      .innerJoin(users, eq(sessions.teacherId, users.id))
+        .leftJoin(users, eq(sessions.teacherId, users.id))
       .leftJoin(
         sessionParticipantSnapshots,
         eq(sessionParticipantSnapshots.sessionId, sessions.id),

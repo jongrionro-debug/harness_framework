@@ -220,6 +220,10 @@ export async function saveTeacherSessionSubmission(
     throw new Error("배정된 세션만 제출하거나 수정할 수 있습니다.");
   }
 
+  if (!workspace.snapshots.length) {
+    throw new Error("운영자가 참여자를 추가해야 제출할 수 있습니다.");
+  }
+
   for (const attachment of await repository.listAttachments(
     input.organizationId,
     input.sessionId,

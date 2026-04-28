@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type RecordDetail = {
   id: string;
   sessionDate: string;
@@ -5,7 +7,7 @@ type RecordDetail = {
   villageName: string;
   programName: string;
   teacherName: string | null;
-  teacherEmail: string;
+  teacherEmail: string | null;
   submittedAt: Date | null;
   updatedAt: Date;
   lessonJournal: string;
@@ -51,7 +53,14 @@ export function RecordDetailScreen({ record }: { record: RecordDetail }) {
     <main className="flex min-h-screen flex-1 flex-col bg-[var(--color-background)]">
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-5 py-6 sm:px-8 lg:px-10 lg:py-10">
         <header className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-panel sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">
+          <Link
+            href="/records"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 text-sm font-semibold text-[var(--color-text-primary)] transition hover:-translate-y-0.5"
+          >
+            <span aria-hidden="true">&lt;</span>
+            뒤로 가기
+          </Link>
+          <p className="mt-5 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">
             Record detail
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-[-0.05em] text-[var(--color-text-primary)] sm:text-5xl">
@@ -68,6 +77,12 @@ export function RecordDetailScreen({ record }: { record: RecordDetail }) {
             <span className="rounded-full bg-[var(--color-surface-alt)] px-3 py-2 text-xs font-semibold text-[var(--color-text-secondary)]">
               최근 수정 {formatDateTimeLabel(record.updatedAt)}
             </span>
+            <Link
+              href={`/dashboard/sessions/${record.id}`}
+              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold text-[var(--color-text-primary)]"
+            >
+              세션 관리
+            </Link>
           </div>
         </header>
 

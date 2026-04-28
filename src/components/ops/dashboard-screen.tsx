@@ -21,7 +21,7 @@ type SessionDashboardData = {
     className: string;
     teacherId: string;
     teacherName: string | null;
-    teacherEmail: string;
+    teacherEmail: string | null;
   }>;
   recentSessions: Array<{
     id: string;
@@ -30,7 +30,7 @@ type SessionDashboardData = {
     villageName: string;
     programName: string;
     teacherName: string | null;
-    teacherEmail: string;
+    teacherEmail: string | null;
     snapshotCount: number;
     submittedAt: Date | null;
   }>;
@@ -49,7 +49,7 @@ type DashboardQueryData = {
     villageName: string;
     programName: string;
     teacherName: string | null;
-    teacherEmail: string;
+    teacherEmail: string | null;
     submittedAt: Date | null;
     updatedAt: Date;
   }>;
@@ -60,7 +60,7 @@ type DashboardQueryData = {
     villageName: string;
     programName: string;
     teacherName: string | null;
-    teacherEmail: string;
+    teacherEmail: string | null;
     submittedAt: Date | null;
     updatedAt: Date;
   }>;
@@ -80,7 +80,7 @@ type DashboardQueryData = {
     villageName: string;
     programName: string;
     teacherName: string | null;
-    teacherEmail: string;
+    teacherEmail: string | null;
     submittedAt: Date | null;
     updatedAt: Date;
   }>;
@@ -154,7 +154,7 @@ function ActivityList({
     villageName: string;
     programName: string;
     teacherName: string | null;
-    teacherEmail: string;
+    teacherEmail: string | null;
     submittedAt: Date | null;
     updatedAt: Date;
   }>;
@@ -190,7 +190,7 @@ function ActivityList({
             </span>
           </div>
           <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
-            {item.teacherName ?? item.teacherEmail} ·{" "}
+            {item.teacherName ?? item.teacherEmail ?? "강사 미할당"} ·{" "}
             {timestampLabel === "submitted"
               ? `제출 ${formatDateTimeLabel(item.submittedAt as Date)}`
               : `수정 ${formatDateTimeLabel(item.updatedAt)}`}
@@ -215,9 +215,8 @@ export function DashboardScreen({
 
   const missingRequirements = [
     !data.villages.length ? "마을" : null,
-    !data.programs.length ? "프로그램" : null,
+    !data.programs.length ? "사업" : null,
     !data.classes.length ? "수업" : null,
-    !data.teacherAssignments.length ? "강사 배정" : null,
   ].filter(Boolean);
 
   return (
@@ -303,12 +302,12 @@ export function DashboardScreen({
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <Panel
             title="세션 만들기"
-            description="날짜, 마을, 프로그램, 수업, 배정된 강사를 선택해 세션과 출석 대상 스냅샷을 함께 생성합니다."
+            description="날짜, 마을, 사업, 수업을 먼저 정하고 강사와 참여자는 세션별로 나중에 보완할 수 있습니다."
           >
             {missingRequirements.length ? (
               <div className="rounded-[18px] bg-[var(--color-surface-alt)] px-4 py-4 text-sm leading-6 text-[var(--color-text-secondary)]">
                 아직 {missingRequirements.join(", ")} 정보가 부족합니다.{" "}
-                `/settings`와 `/users`에서 기본 데이터를 채운 뒤 세션을 만들 수
+                `/settings`에서 기본 데이터를 채운 뒤 세션을 만들 수
                 있습니다.
               </div>
             ) : null}
@@ -334,7 +333,7 @@ export function DashboardScreen({
                 name="programId"
                 className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
               >
-                <option value="">프로그램 선택</option>
+                <option value="">사업 선택</option>
                 {data.programs.map((program) => (
                   <option key={program.id} value={program.id}>
                     {program.name}
@@ -348,7 +347,7 @@ export function DashboardScreen({
                 <option value="">수업 선택</option>
                 {data.classes.map((klass) => (
                   <option key={klass.id} value={klass.id}>
-                    {klass.name} · {klass.programName ?? "프로그램 미연결"} ·{" "}
+                    {klass.name} · {klass.programName ?? "사업 미연결"} ·{" "}
                     {klass.villageName ?? "마을 미연결"}
                   </option>
                 ))}
@@ -357,7 +356,7 @@ export function DashboardScreen({
                 name="teacherId"
                 className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
               >
-                <option value="">배정 강사 선택</option>
+                <option value="">강사 나중에 할당</option>
                 {data.teacherAssignments.map((assignment) => (
                   <option
                     key={`${assignment.classId}-${assignment.teacherId}`}
@@ -400,10 +399,19 @@ export function DashboardScreen({
                       </span>
                     </div>
                     <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
-                      강사 {session.teacherName ?? session.teacherEmail} · 스냅샷{" "}
-                      {session.snapshotCount}명 ·{" "}
+                      강사{" "}
+                      {session.teacherName ??
+                        session.teacherEmail ??
+                        "미할당"}{" "}
+                      · 스냅샷 {session.snapshotCount}명 ·{" "}
                       {session.submittedAt ? "제출 완료" : "제출 전"}
                     </p>
+                    <Link
+                      href={`/dashboard/sessions/${session.id}`}
+                      className="mt-3 inline-flex rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold text-[var(--color-text-primary)]"
+                    >
+                      세션 관리
+                    </Link>
                   </div>
                 ))
               ) : (

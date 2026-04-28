@@ -22,7 +22,7 @@ type RecordSummaryRow = {
   villageName: string;
   programName: string;
   teacherName: string | null;
-  teacherEmail: string;
+  teacherEmail: string | null;
   submittedAt: Date | null;
   updatedAt: Date;
 };
@@ -61,7 +61,7 @@ export function applyRecordFilters(
 
     if (
       filters.teacher &&
-      (row.teacherName ?? row.teacherEmail) !== filters.teacher
+      (row.teacherName ?? row.teacherEmail ?? "강사 미할당") !== filters.teacher
     ) {
       return false;
     }
@@ -75,7 +75,7 @@ export function applyRecordFilters(
       row.programName,
       row.villageName,
       row.teacherName ?? "",
-      row.teacherEmail,
+      row.teacherEmail ?? "강사 미할당",
     ]
       .join(" ")
       .toLowerCase()
@@ -110,7 +110,7 @@ export async function listOperatorRecords(
     .innerJoin(classes, eq(sessions.classId, classes.id))
     .innerJoin(villages, eq(sessions.villageId, villages.id))
     .innerJoin(programs, eq(sessions.programId, programs.id))
-    .innerJoin(users, eq(sessions.teacherId, users.id))
+    .leftJoin(users, eq(sessions.teacherId, users.id))
     .where(eq(sessions.organizationId, organizationId))
     .orderBy(asc(classes.name), asc(sessions.sessionDate));
 
@@ -119,7 +119,7 @@ export async function listOperatorRecords(
     filterOptions: {
       programs: Array.from(new Set(rows.map((row) => row.programName))).sort(),
       teachers: Array.from(
-        new Set(rows.map((row) => row.teacherName ?? row.teacherEmail)),
+        new Set(rows.map((row) => row.teacherName ?? row.teacherEmail ?? "강사 미할당")),
       ).sort(),
     },
   };
@@ -148,7 +148,7 @@ export async function getOperatorRecordDetail(
       .innerJoin(classes, eq(sessions.classId, classes.id))
       .innerJoin(villages, eq(sessions.villageId, villages.id))
       .innerJoin(programs, eq(sessions.programId, programs.id))
-      .innerJoin(users, eq(sessions.teacherId, users.id))
+      .leftJoin(users, eq(sessions.teacherId, users.id))
       .where(
         and(
           eq(sessions.organizationId, organizationId),

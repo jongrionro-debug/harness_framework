@@ -13,7 +13,7 @@ export default function OrganizationCompletePage() {
               기관 생성이 완료되었습니다.
             </h1>
             <p className="mt-3 text-sm leading-6 text-[color:rgba(47,158,91,0.86)]">
-              이제 운영 기본정보를 채우고 첫 프로그램과 수업, 강사 연결을
+              이제 운영 기본정보를 채우고 첫 사업과 수업, 강사 연결을
               시작할 수 있습니다.
             </p>
           </div>
@@ -28,7 +28,7 @@ export default function OrganizationCompletePage() {
           </h2>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             {[
-              "첫 프로그램 만들기",
+              "첫 사업 만들기",
               "수업과 마을 연결하기",
               "강사 계정과 담당 범위 지정하기",
             ].map((item) => (

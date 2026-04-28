@@ -43,6 +43,33 @@
       "goal": "Add the operator dashboard, records search/detail, and final local smoke-test support.",
       "status": "completed",
       "completed_at": "2026-04-15T21:10:02+0900"
+    },
+    {
+      "dir": "5-ops-ux-polish",
+      "phase": "ops-ux-polish",
+      "goal": "Rename visible program copy to business copy, add operator back navigation, and make invite tokens reusable with test-first execution.",
+      "status": "completed",
+      "completed_at": "2026-04-28T16:23:01+0900"
+    },
+    {
+      "dir": "6-flexible-session-core",
+      "phase": "flexible-session-core",
+      "goal": "Allow sessions to be created before teacher and roster details are complete while preserving submission rules, and treat this as the first half of a same-release bundle with phase 7.",
+      "status": "completed",
+      "completed_at": "2026-04-28T16:38:12+0900"
+    },
+    {
+      "dir": "7-session-management-dashboard",
+      "phase": "session-management-dashboard",
+      "goal": "Add the operator session management surface that completes the phase 6 create-first workflow in the same release window.",
+      "status": "completed",
+      "completed_at": "2026-04-28T16:41:29+0900"
+    },
+    {
+      "dir": "8-local-smoke-hardening",
+      "phase": "local-smoke-hardening",
+      "goal": "Document and verify the flexible session management smoke path with a Supabase-backed local dev run, migrations, and manual smoke evidence.",
+      "status": "pending"
     }
   ]
 }

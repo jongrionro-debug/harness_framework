@@ -17,6 +17,18 @@ describe("session validations", () => {
     ).toBe(true);
   });
 
+  it("accepts session creation without a teacher assignment", () => {
+    expect(
+      sessionCreateSchema.safeParse({
+        sessionDate: "2026-04-15",
+        villageId: "46a87e1a-9918-4ea1-872f-999999999999",
+        programId: "56a87e1a-9918-4ea1-872f-999999999999",
+        classId: "66a87e1a-9918-4ea1-872f-999999999999",
+        teacherId: "",
+      }).success,
+    ).toBe(true);
+  });
+
   it("rejects malformed dates and missing ids", () => {
     const parsed = sessionCreateSchema.safeParse({
       sessionDate: "2026/04/15",

@@ -30,7 +30,7 @@ type DashboardSessionActivity = {
   villageName: string;
   programName: string;
   teacherName: string | null;
-  teacherEmail: string;
+  teacherEmail: string | null;
   submittedAt: Date | null;
   updatedAt: Date;
 };
@@ -111,7 +111,7 @@ function createDashboardRepository(): DashboardRepository {
         .innerJoin(classes, eq(sessions.classId, classes.id))
         .innerJoin(villages, eq(sessions.villageId, villages.id))
         .innerJoin(programs, eq(sessions.programId, programs.id))
-        .innerJoin(users, eq(sessions.teacherId, users.id))
+        .leftJoin(users, eq(sessions.teacherId, users.id))
         .where(eq(sessions.organizationId, organizationId))
         .orderBy(desc(sessions.updatedAt), asc(classes.name));
     },
@@ -154,8 +154,8 @@ export function getSetupGaps(
 
   if (!counts.programCount) {
     gaps.push({
-      label: "첫 프로그램 만들기",
-      description: "세션을 만들기 전에 프로그램 이름부터 준비합니다.",
+      label: "첫 사업 만들기",
+      description: "세션을 만들기 전에 사업 이름부터 준비합니다.",
       href: "/settings",
     });
   }
@@ -163,7 +163,7 @@ export function getSetupGaps(
   if (!counts.classCount) {
     gaps.push({
       label: "첫 수업 연결하기",
-      description: "마을과 프로그램을 수업에 연결해야 세션을 만들 수 있습니다.",
+      description: "마을과 사업을 수업에 연결해야 세션을 만들 수 있습니다.",
       href: "/settings",
     });
   }

@@ -108,7 +108,7 @@ export function SettingsScreen({ data }: { data: SettingsOverview }) {
             운영 기본정보를 비어 있는 상태에서부터 차근차근 채웁니다.
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--color-text-secondary)]">
-            기관 생성 직후 프로그램, 수업, 참여자 명단이 비어 있어도 괜찮게
+            기관 생성 직후 사업, 수업, 참여자 명단이 비어 있어도 괜찮게
             설계하고, 운영자가 필요한 것부터 하나씩 추가하는 흐름을 우선
             구현합니다.
           </p>
@@ -150,8 +150,8 @@ export function SettingsScreen({ data }: { data: SettingsOverview }) {
           </Section>
 
           <Section
-            title="프로그램"
-            description="기관이 운영하는 프로그램 또는 사업 단위를 관리합니다."
+            title="사업"
+            description="기관이 운영하는 사업 또는 사업 단위를 관리합니다."
           >
             <div className="space-y-2">
               {data.programs.length ? (
@@ -172,23 +172,23 @@ export function SettingsScreen({ data }: { data: SettingsOverview }) {
                 ))
               ) : (
                 <p className="rounded-[18px] bg-[var(--color-surface-alt)] px-4 py-3 text-sm text-[var(--color-text-secondary)]">
-                  아직 프로그램이 없습니다. 첫 프로그램을 추가해 주세요.
+                  아직 사업이 없습니다. 첫 사업을 추가해 주세요.
                 </p>
               )}
             </div>
             <form action={programAction} className="mt-4 grid gap-3">
               <input
                 name="name"
-                placeholder="예: 문해 프로그램"
+                placeholder="예: 문해 사업"
                 className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
               />
               <textarea
                 name="description"
-                placeholder="프로그램 설명"
+                placeholder="사업 설명"
                 className="min-h-24 rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
               />
               <button className="rounded-full bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-accent-ink)]">
-                프로그램 추가
+                사업 추가
               </button>
             </form>
             <Feedback state={programState} />
@@ -196,7 +196,7 @@ export function SettingsScreen({ data }: { data: SettingsOverview }) {
 
           <Section
             title="수업"
-            description="프로그램과 마을을 선택적으로 연결해 실제 운영 수업을 만듭니다."
+            description="사업과 마을을 선택적으로 연결해 실제 운영 수업을 만듭니다."
           >
             <div className="space-y-2">
               {data.classes.length ? (
@@ -209,7 +209,7 @@ export function SettingsScreen({ data }: { data: SettingsOverview }) {
                       {klass.name}
                     </p>
                     <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-                      {klass.programName ?? "프로그램 미연결"} ·{" "}
+                      {klass.programName ?? "사업 미연결"} ·{" "}
                       {klass.villageName ?? "마을 미연결"}
                     </p>
                   </div>
@@ -235,7 +235,7 @@ export function SettingsScreen({ data }: { data: SettingsOverview }) {
                 name="programId"
                 className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none"
               >
-                <option value="">프로그램 선택 안 함</option>
+                <option value="">사업 선택 안 함</option>
                 {data.programs.map((program) => (
                   <option key={program.id} value={program.id}>
                     {program.name}

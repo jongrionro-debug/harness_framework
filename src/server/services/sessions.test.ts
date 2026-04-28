@@ -127,6 +127,63 @@ describe("session services", () => {
     ]);
   });
 
+  it("creates a session without a teacher and without roster snapshots", async () => {
+    const insertedSessions: unknown[] = [];
+    const insertedSnapshots: unknown[] = [];
+
+    const result = await createSessionRecord(
+      {
+        organizationId: "org-1",
+        villageId: "village-1",
+        programId: "program-1",
+        classId: "class-1",
+        teacherId: null,
+        sessionDate: "2026-04-15",
+      },
+      {
+        findClassRecord: async () => ({
+          id: "class-1",
+          organizationId: "org-1",
+          name: "기초 문해 수업",
+          programId: "program-1",
+          villageId: "village-1",
+        }),
+        hasVillageRecord: async () => true,
+        hasProgramRecord: async () => true,
+        findTeacherAssignment: async () => {
+          throw new Error("teacher assignment should not be checked");
+        },
+        listParticipantsForClass: async () => [],
+        insertSession: async (values) => {
+          insertedSessions.push(values);
+          return {
+            id: "session-1",
+            organizationId: "org-1",
+          };
+        },
+        insertSessionParticipantSnapshots: async (values) => {
+          insertedSnapshots.push(values);
+        },
+      },
+    );
+
+    expect(result).toEqual({
+      sessionId: "session-1",
+      snapshotCount: 0,
+    });
+    expect(insertedSessions).toEqual([
+      {
+        organizationId: "org-1",
+        villageId: "village-1",
+        programId: "program-1",
+        classId: "class-1",
+        teacherId: null,
+        sessionDate: "2026-04-15",
+      },
+    ]);
+    expect(insertedSnapshots).toEqual([]);
+  });
+
   it("rejects session creation when the teacher assignment is outside scope", async () => {
     await expect(
       createSessionRecord(
@@ -222,6 +279,15 @@ describe("session services", () => {
           className: "B반",
           villageName: "바다 마을",
           programName: "생활",
+          submittedAt: null,
+        },
+        {
+          id: "session-3",
+          teacherId: null,
+          sessionDate: "2026-04-17",
+          className: "C반",
+          villageName: "숲 마을",
+          programName: "기초",
           submittedAt: null,
         },
       ]),

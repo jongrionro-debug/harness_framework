@@ -94,7 +94,7 @@ export async function createProgramAction(
 
   if (!parsed.success) {
     return {
-      message: "프로그램 정보를 다시 확인해 주세요.",
+      message: "사업 정보를 다시 확인해 주세요.",
       fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
@@ -106,7 +106,7 @@ export async function createProgramAction(
   });
 
   revalidatePath("/settings");
-  return { message: "프로그램을 추가했습니다." };
+  return { message: "사업을 추가했습니다." };
 }
 
 export async function createClassAction(

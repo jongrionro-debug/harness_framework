@@ -68,7 +68,7 @@ describe("dashboard services", () => {
       ),
     ).toMatchObject({
       setupGaps: [
-        { label: "첫 프로그램 만들기" },
+        { label: "첫 사업 만들기" },
         { label: "첫 수업 연결하기" },
         { label: "강사 배정하기" },
         { label: "첫 세션 만들기" },
@@ -111,5 +111,40 @@ describe("dashboard services", () => {
       pendingSessions: 1,
       completionRate: 67,
     });
+  });
+
+  it("keeps unassigned sessions visible in dashboard query results", async () => {
+    const dashboard = await listOperatorDashboardData("org-1", {
+      getCounts: async () => ({
+        villageCount: 1,
+        programCount: 1,
+        classCount: 1,
+        teacherAssignmentCount: 0,
+        attendanceCount: 0,
+        journalCount: 0,
+        attachmentCount: 0,
+      }),
+      listSessionActivity: async () => [
+        {
+          id: "session-unassigned",
+          sessionDate: "2026-04-20",
+          className: "현장 수업",
+          villageName: "성내마을",
+          programName: "문해 사업",
+          teacherName: null,
+          teacherEmail: null,
+          submittedAt: null,
+          updatedAt: new Date("2026-04-20T10:00:00.000Z"),
+        },
+      ],
+    });
+
+    expect(dashboard.pendingSessions).toEqual([
+      expect.objectContaining({
+        id: "session-unassigned",
+        teacherName: null,
+        teacherEmail: null,
+      }),
+    ]);
   });
 });

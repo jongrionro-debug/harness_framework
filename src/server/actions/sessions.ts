@@ -68,7 +68,7 @@ export async function createSessionAction(
       villageId: parsed.data.villageId,
       programId: parsed.data.programId,
       classId: parsed.data.classId,
-      teacherId: parsed.data.teacherId,
+      teacherId: parsed.data.teacherId || null,
     });
 
     revalidatePath("/dashboard");

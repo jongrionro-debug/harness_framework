@@ -31,7 +31,7 @@ describe("records services", () => {
       villageName: "숲 마을",
       programName: "기초",
       teacherName: null,
-      teacherEmail: "teacher-3@example.com",
+      teacherEmail: null,
       submittedAt: null,
       updatedAt: new Date("2026-04-12T10:00:00.000Z"),
     },
@@ -70,5 +70,17 @@ describe("records services", () => {
         teacher: "김선생",
       }).map((row) => row.id),
     ).toEqual(["session-1"]);
+
+    expect(
+      applyRecordFilters(rows, {
+        teacher: "강사 미할당",
+      }).map((row) => row.id),
+    ).toEqual(["session-3"]);
+
+    expect(
+      applyRecordFilters(rows, {
+        search: "강사 미할당",
+      }).map((row) => row.id),
+    ).toEqual(["session-3"]);
   });
 });

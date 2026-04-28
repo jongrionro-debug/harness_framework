@@ -6,9 +6,34 @@ export const sessionCreateSchema = z.object({
     .trim()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "세션 날짜를 선택해 주세요."),
   villageId: z.string().uuid("유효한 마을 id가 필요합니다."),
-  programId: z.string().uuid("유효한 프로그램 id가 필요합니다."),
+  programId: z.string().uuid("유효한 사업 id가 필요합니다."),
   classId: z.string().uuid("유효한 수업 id가 필요합니다."),
-  teacherId: z.string().uuid("유효한 강사 id가 필요합니다."),
+  teacherId: z.string().uuid("유효한 강사 id가 필요합니다.").optional().or(z.literal("")),
+});
+
+export const sessionTeacherAssignmentSchema = z.object({
+  sessionId: z.string().uuid("유효한 세션 id가 필요합니다."),
+  teacherId: z
+    .string()
+    .uuid("유효한 강사 id가 필요합니다.")
+    .optional()
+    .or(z.literal("")),
+});
+
+export const existingSessionParticipantSchema = z.object({
+  sessionId: z.string().uuid("유효한 세션 id가 필요합니다."),
+  participantId: z.string().uuid("유효한 참여자 id가 필요합니다."),
+});
+
+export const newSessionParticipantSchema = z.object({
+  sessionId: z.string().uuid("유효한 세션 id가 필요합니다."),
+  fullName: z.string().trim().min(2, "참여자 이름을 2자 이상 입력해 주세요."),
+  note: z
+    .string()
+    .trim()
+    .max(300, "메모는 300자 이하로 입력해 주세요.")
+    .optional()
+    .or(z.literal("")),
 });
 
 export const attendanceStatusSchema = z.enum([

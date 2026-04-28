@@ -102,7 +102,7 @@ describe("settings services", () => {
     await createProgramRecord(
       {
         organizationId: "org-1",
-        name: "문해 프로그램",
+        name: "문해 사업",
         description: "  설명  ",
       },
       {
@@ -119,7 +119,7 @@ describe("settings services", () => {
     expect(inserted).toEqual([
       {
         organizationId: "org-1",
-        name: "문해 프로그램",
+        name: "문해 사업",
         description: "설명",
       },
     ]);
