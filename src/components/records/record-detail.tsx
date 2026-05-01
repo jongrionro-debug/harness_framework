@@ -129,8 +129,8 @@ export function RecordDetailScreen({ record }: { record: RecordDetail }) {
                   record.attachments.map((attachment) => {
                     // 수파베이스 스토리지의 공개 URL을 생성합니다.
                     // 형식: [PROJECT_URL]/storage/v1/object/public/[BUCKET_NAME]/[FILE_ID]
-                    const publicUrl = `https://sbpjolnlnwryjcwfjojd.supabase.co/storage/v1/object/public/session-attachments/organizations/${record.organizationId}/sessions/${record.id}/${attachment.id}-${attachment.fileName}`;
-            
+                    const publicUrl = `https://sbpjolnlnwryjcwfjojd.supabase.co/storage/v1/object/public/session-attachments/${attachment.filePath}`;
+                    
                     return (
                       <div
                         key={attachment.id}
