@@ -147,11 +147,9 @@ export function RecordDetailScreen({ record }: { record: RecordDetail }) {
                         
                         <a
                           href={publicUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
                           className="rounded-full bg-[var(--color-surface)] px-4 py-2 text-xs font-bold text-[var(--color-text-primary)] border border-[var(--color-border)] transition hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-ink)]"
                         >
-                          보기 / 다운로드
+                          다운로드
                         </a>
                       </div>
                     );
