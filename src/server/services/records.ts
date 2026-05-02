@@ -135,6 +135,7 @@ export async function getOperatorRecordDetail(
     db
       .select({
         id: sessions.id,
+        organizationId: sessions.organizationId,
         sessionDate: sessions.sessionDate,
         className: classes.name,
         villageName: villages.name,
@@ -197,6 +198,7 @@ export async function getOperatorRecordDetail(
         fileName: attachments.fileName,
         mimeType: attachments.mimeType,
         size: attachments.size,
+        filePath: attachments.filePath,
       })
       .from(attachments)
       .where(
