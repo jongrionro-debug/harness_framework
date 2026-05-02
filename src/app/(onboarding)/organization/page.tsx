@@ -14,5 +14,5 @@ export default async function OrganizationOnboardingPage() {
     redirect("/approval-pending");
   }
 
-  return <OnboardingForm />;
+  return <OnboardingForm email={authState.user?.email} />;
 }

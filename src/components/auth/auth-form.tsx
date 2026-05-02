@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -11,37 +12,49 @@ type AuthFormProps = {
 
 const modeCopy = {
   login: {
-    eyebrow: "Login",
-    title: "이메일과 비밀번호로 다시 들어옵니다.",
-    description:
-      "기관 운영자와 강사는 같은 인증 흐름을 사용하고, 이후 권한에 따라 알맞은 영역으로 이동합니다.",
     submitLabel: "로그인",
-    alternateLabel: "처음이신가요?",
-    alternateHref: "/signup",
-    alternateAction: "회원가입",
+    passwordHelp: "비밀번호 찾기",
+    accountHelp: "아이디 찾기",
   },
   signup: {
-    eyebrow: "Signup",
-    title: "가볍게 가입하고 기관 생성을 시작합니다.",
-    description:
-      "로컬 MVP에서는 이메일과 비밀번호 기반의 단순한 가입 흐름을 우선 연결합니다.",
     submitLabel: "회원가입",
-    alternateLabel: "이미 계정이 있나요?",
-    alternateHref: "/login",
-    alternateAction: "로그인",
+    passwordHelp: "비밀번호 찾기",
+    accountHelp: "아이디 찾기",
   },
 } as const;
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordPattern =
+  /^(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export function AuthForm({ mode }: AuthFormProps) {
   const copy = modeCopy[mode];
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberLogin, setRememberLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
+  const hasEmailError = email.length > 0 && !emailPattern.test(email);
+  const hasPasswordError =
+    mode === "signup" && password.length > 0 && !passwordPattern.test(password);
+  const alternateHref = mode === "login" ? "/signup" : "/login";
+  const alternateLabel = mode === "login" ? "회원가입" : "로그인";
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!email || !password) {
+      setFeedback("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    if (hasEmailError || hasPasswordError) {
+      setFeedback("입력 형식을 확인해주세요.");
+      return;
+    }
+
     setIsPending(true);
     setFeedback(null);
 
@@ -73,99 +86,168 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="flex min-h-screen flex-1 flex-col bg-[var(--color-background)]">
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-5 py-6 sm:px-8 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8 lg:px-10 lg:py-10">
-        <aside className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-panel">
-          <div className="rounded-[22px] bg-[var(--color-accent-surface)] px-4 py-4 text-[var(--color-accent-ink)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em]">
-              {copy.eyebrow}
-            </p>
-            <h1 className="mt-2 text-2xl font-bold tracking-[-0.04em]">
-              {copy.title}
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-[color:rgba(31,26,23,0.78)]">
-              {copy.description}
-            </p>
+    <main className="flex min-h-screen flex-1 items-center justify-center bg-[#f6f1e8] px-4 py-8 text-[#111111]">
+      <section className="flex min-h-[min(88vh,940px)] w-full max-w-[1347px] flex-col rounded-[34px] bg-[#fffdf8] px-5 py-12 shadow-[0_0_16px_rgba(255,255,255,0.6)] sm:rounded-[50px] sm:px-10 lg:px-[clamp(5rem,14vw,12.5rem)]">
+        <header className="flex items-center justify-center gap-4">
+          <div className="relative h-[48px] w-[52px] overflow-hidden">
+            <Image
+              src="/figma-assets/login-brand-mark.png"
+              alt=""
+              width={1536}
+              height={1024}
+              priority
+              className="absolute max-w-none"
+              style={{
+                height: "186.67%",
+                left: "-62.17%",
+                top: "-35.24%",
+                width: "223.57%",
+              }}
+            />
           </div>
 
-          <div className="mt-4 rounded-[22px] bg-[var(--color-surface-alt)] p-4">
-            <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-              인증 이후 이동
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-              membership 정보가 없으면 `/organization`, 있으면 `/dashboard`
-              로 보내도록 foundation을 준비했습니다.
-            </p>
-          </div>
-        </aside>
+          <h1 className="flex items-baseline gap-2 whitespace-nowrap text-[42px] font-black leading-none">
+            <span
+              style={{
+                fontFamily:
+                  "'Gemunu Libre', Impact, 'Arial Black', var(--font-ui), sans-serif",
+              }}
+            >
+              DURE
+            </span>
+            <span className="text-[24px] font-black">: 두레</span>
+          </h1>
+        </header>
 
-        <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-panel sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">
-            Supabase auth
-          </p>
-          <h2 className="mt-3 text-4xl font-bold tracking-[-0.05em] text-[var(--color-text-primary)] sm:text-5xl">
-            {copy.submitLabel}
-          </h2>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--color-text-secondary)]">
-            현재는 email/password 흐름만 연결합니다. OAuth, 초대 메일 발송,
-            상세 권한 체크는 이후 phase에서 확장합니다.
-          </p>
+        <form
+          className="mx-auto mt-20 flex w-full max-w-[947px] flex-col"
+          onSubmit={handleSubmit}
+          noValidate
+        >
+          <label className="flex flex-col">
+            <span
+              className="text-[26px] font-normal leading-none text-black"
+              style={{
+                fontFamily:
+                  "'Gemunu Libre', var(--font-ui), 'Noto Sans KR', sans-serif",
+              }}
+            >
+              E-mail
+            </span>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="mt-4 h-16 rounded-[30px] border border-[#555555] bg-[#fffdf8] px-7 text-[20px] text-black outline-none transition focus:border-black focus:ring-2 focus:ring-[#ffec1d]"
+              placeholder="example1"
+              autoComplete="email"
+              required
+            />
+            <span className="mt-2 min-h-6 text-[16px] leading-6 text-red-600">
+              {hasEmailError ? "dure@example.com의 형식을 지켜주세요" : ""}
+            </span>
+          </label>
 
-          <form className="mt-8 grid gap-4" onSubmit={handleSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                Email
-              </span>
+          <label className="mt-5 flex flex-col">
+            <span
+              className="text-[26px] font-normal leading-none text-black"
+              style={{
+                fontFamily:
+                  "'Gemunu Libre', var(--font-ui), 'Noto Sans KR', sans-serif",
+              }}
+            >
+              Password
+            </span>
+            <span className="relative mt-4">
               <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-surface)]"
-                placeholder="teacher@example.com"
-                required
-              />
-            </label>
-
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                Password
-              </span>
-              <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-surface)]"
-                placeholder="••••••••"
+                className="h-16 w-full rounded-[30px] border border-[#555555] bg-[#fffdf8] px-7 pr-20 text-[20px] text-black outline-none transition focus:border-black focus:ring-2 focus:ring-[#ffec1d]"
+                placeholder="******"
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                className="absolute right-6 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                aria-label={
+                  showPassword ? "비밀번호 숨기기" : "비밀번호 보이기"
+                }
+              >
+                <Image
+                  src="/figma-assets/login-password-eye.png"
+                  alt=""
+                  width={39}
+                  height={39}
+                  className="size-[32px]"
+                />
+              </button>
+            </span>
+            <span className="mt-2 min-h-6 text-[16px] leading-6 text-red-600">
+              {hasPasswordError
+                ? "알파벳 소문자, 숫자, 특수문자를 모두 포함해주세요."
+                : ""}
+            </span>
+          </label>
+
+          {mode === "login" ? (
+            <label className="mt-5 flex w-fit cursor-pointer items-center gap-2 text-[16px] font-medium text-[#555555]">
+              <input
+                type="checkbox"
+                checked={rememberLogin}
+                onChange={(event) => setRememberLogin(event.target.checked)}
+                className="sr-only"
+              />
+              <span className="relative flex size-8 items-center justify-center rounded-full border border-transparent">
+                {rememberLogin ? (
+                  <Image
+                    src="/figma-assets/login-remember-check.png"
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="size-8"
+                  />
+                ) : (
+                  <span className="size-6 rounded-full border-2 border-[#555555]" />
+                )}
+              </span>
+              <span>로그인 상태 유지</span>
             </label>
+          ) : null}
 
-            {feedback ? (
-              <p className="rounded-[18px] bg-[var(--color-surface-alt)] px-4 py-3 text-sm leading-6 text-[var(--color-text-secondary)]">
-                {feedback}
-              </p>
-            ) : null}
+          {feedback ? (
+            <p className="mt-5 rounded-[18px] bg-[#f6f1e8] px-5 py-3 text-[15px] leading-6 text-[#555555]">
+              {feedback}
+            </p>
+          ) : null}
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="mt-2 rounded-full bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-accent-ink)] transition disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isPending ? "진행 중..." : copy.submitLabel}
+          <button
+            type="submit"
+            disabled={isPending}
+            className="mt-8 h-16 rounded-[30px] bg-[#ffec1d] text-[20px] font-extrabold text-black shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isPending ? "진행 중..." : copy.submitLabel}
+          </button>
+
+          <nav className="mt-6 flex items-center justify-center gap-2 text-center text-[16px] font-medium text-[#555555]">
+            <button type="button" className="transition hover:text-black">
+              {copy.passwordHelp}
             </button>
-          </form>
-
-          <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-            <span>{copy.alternateLabel}</span>
-            <a
-              href={copy.alternateHref}
-              className="font-semibold text-[var(--color-text-primary)]"
-            >
-              {copy.alternateAction}
+            <span>|</span>
+            <button type="button" className="transition hover:text-black">
+              {copy.accountHelp}
+            </button>
+            <span>|</span>
+            <a href={alternateHref} className="transition hover:text-black">
+              {alternateLabel}
             </a>
-          </div>
-        </section>
-      </div>
+          </nav>
+        </form>
+      </section>
     </main>
   );
 }

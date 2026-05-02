@@ -82,6 +82,11 @@ export type SessionManagementRepository = {
     note: string | null;
     rosterOrder: number;
   }): Promise<void>;
+  deleteSessionSnapshot?(values: {
+    organizationId: string;
+    sessionId: string;
+    snapshotId: string;
+  }): Promise<void>;
   touchSession(organizationId: string, sessionId: string): Promise<void>;
 };
 
@@ -234,6 +239,17 @@ function createSessionManagementRepository(): SessionManagementRepository {
     async insertSessionSnapshot(values) {
       await db.insert(sessionParticipantSnapshots).values(values);
     },
+    async deleteSessionSnapshot(values) {
+      await db
+        .delete(sessionParticipantSnapshots)
+        .where(
+          and(
+            eq(sessionParticipantSnapshots.organizationId, values.organizationId),
+            eq(sessionParticipantSnapshots.sessionId, values.sessionId),
+            eq(sessionParticipantSnapshots.id, values.snapshotId),
+          ),
+        );
+    },
     async touchSession(organizationId, sessionId) {
       await db
         .update(sessions)
@@ -368,6 +384,35 @@ export async function createAndAddParticipantToSession(
   await repository.touchSession(input.organizationId, input.sessionId);
 
   return { participantId: participant.id };
+}
+
+export async function removeParticipantFromSession(
+  input: {
+    organizationId: string;
+    sessionId: string;
+    snapshotId: string;
+  },
+  repository: SessionManagementRepository = createSessionManagementRepository(),
+) {
+  const session = await repository.findSession(
+    input.organizationId,
+    input.sessionId,
+  );
+
+  if (!session) {
+    throw new Error("선택한 세션을 찾을 수 없습니다.");
+  }
+
+  if (!repository.deleteSessionSnapshot) {
+    throw new Error("세션 참여자 제거 기능을 사용할 수 없습니다.");
+  }
+
+  await repository.deleteSessionSnapshot({
+    organizationId: input.organizationId,
+    sessionId: input.sessionId,
+    snapshotId: input.snapshotId,
+  });
+  await repository.touchSession(input.organizationId, input.sessionId);
 }
 
 export async function getOperatorSessionManagement(

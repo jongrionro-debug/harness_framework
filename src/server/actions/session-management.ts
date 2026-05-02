@@ -6,12 +6,14 @@ import { getServerAuthState } from "@/lib/auth/supabase-server";
 import {
   existingSessionParticipantSchema,
   newSessionParticipantSchema,
+  removeSessionParticipantSchema,
   sessionTeacherAssignmentSchema,
 } from "@/lib/validations/sessions";
 import {
   addExistingParticipantToSession,
   assignTeacherToSession,
   createAndAddParticipantToSession,
+  removeParticipantFromSession,
 } from "@/server/services/session-management";
 
 type SessionManagementActionState = {
@@ -47,6 +49,7 @@ async function requireOrganizationAdmin() {
 
 function revalidateSessionManagement(sessionId: string) {
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/status");
   revalidatePath(`/dashboard/sessions/${sessionId}`);
   revalidatePath("/records");
   revalidatePath(`/records/${sessionId}`);
@@ -178,4 +181,44 @@ export async function createSessionParticipantAction(
 
   revalidateSessionManagement(parsed.data.sessionId);
   return { message: "새 참여자를 전체 명단과 이 세션에 추가했습니다." };
+}
+
+export async function removeSessionParticipantAction(
+  _: SessionManagementActionState,
+  formData: FormData,
+) {
+  const access = await requireOrganizationAdmin();
+  if ("error" in access) {
+    return { message: access.error };
+  }
+
+  const parsed = removeSessionParticipantSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+    snapshotId: formData.get("snapshotId"),
+  });
+
+  if (!parsed.success) {
+    return {
+      message: "제거할 참여자 정보를 다시 확인해 주세요.",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    await removeParticipantFromSession({
+      organizationId: access.organizationId,
+      sessionId: parsed.data.sessionId,
+      snapshotId: parsed.data.snapshotId,
+    });
+  } catch (error) {
+    return {
+      message:
+        error instanceof Error
+          ? error.message
+          : "참여자 제거 중 오류가 발생했습니다.",
+    };
+  }
+
+  revalidateSessionManagement(parsed.data.sessionId);
+  return { message: "세션 참여자를 제거했습니다." };
 }

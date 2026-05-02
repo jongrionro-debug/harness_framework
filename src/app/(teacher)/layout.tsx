@@ -24,7 +24,7 @@ export default async function TeacherLayout({
     <>
       <AuthSessionBar
         email={authState.user?.email}
-        roleLabel="강사 세션 제출 영역"
+        roleLabel="강사"
       />
       {children}
     </>

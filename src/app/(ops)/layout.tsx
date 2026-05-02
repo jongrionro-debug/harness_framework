@@ -24,7 +24,7 @@ export default async function OpsLayout({
     <>
       <AuthSessionBar
         email={authState.user?.email}
-        roleLabel="운영자 작업 영역"
+        roleLabel="운영자"
       />
       {children}
     </>

@@ -36,6 +36,11 @@ export const newSessionParticipantSchema = z.object({
     .or(z.literal("")),
 });
 
+export const removeSessionParticipantSchema = z.object({
+  sessionId: z.string().uuid("유효한 세션 id가 필요합니다."),
+  snapshotId: z.string().uuid("유효한 세션 참여자 id가 필요합니다."),
+});
+
 export const attendanceStatusSchema = z.enum([
   "present",
   "absent",

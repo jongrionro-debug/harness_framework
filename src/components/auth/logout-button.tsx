@@ -8,9 +8,11 @@ import { getSupabaseBrowserClient } from "@/lib/auth/supabase-browser";
 export function LogoutButton({
   email,
   tone = "surface",
+  variant = "default",
 }: {
   email?: string | null;
   tone?: "surface" | "accent";
+  variant?: "default" | "compact";
 }) {
   const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -39,6 +41,19 @@ export function LogoutButton({
     tone === "accent"
       ? "bg-[var(--color-accent)] text-[var(--color-accent-ink)]"
       : "bg-[var(--color-surface)] text-[var(--color-text-primary)]";
+
+  if (variant === "compact") {
+    return (
+      <button
+        type="button"
+        onClick={handleLogout}
+        disabled={isPending}
+        className="text-[20px] font-semibold text-[#555555] transition hover:text-black disabled:cursor-not-allowed disabled:opacity-70"
+      >
+        {isPending ? "로그아웃 중..." : "로그아웃"}
+      </button>
+    );
+  }
 
   return (
     <div className="flex flex-col items-start gap-3 sm:items-end">

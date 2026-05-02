@@ -2,6 +2,7 @@ import {
   addExistingParticipantToSession,
   assignTeacherToSession,
   createAndAddParticipantToSession,
+  removeParticipantFromSession,
 } from "@/server/services/session-management";
 
 describe("session management services", () => {
@@ -288,6 +289,54 @@ describe("session management services", () => {
         note: "현장 추가",
         rosterOrder: 0,
       },
+    ]);
+  });
+
+  it("removes a participant snapshot from a session and touches the session", async () => {
+    const deleted: unknown[] = [];
+    const touched: unknown[] = [];
+
+    await removeParticipantFromSession(
+      {
+        organizationId: "org-1",
+        sessionId: "session-1",
+        snapshotId: "snapshot-1",
+      },
+      {
+        findSession: async () => ({
+          id: "session-1",
+          organizationId: "org-1",
+          classId: "class-1",
+          submittedAt: null,
+        }),
+        deleteSessionSnapshot: async (values) => {
+          deleted.push(values);
+        },
+        touchSession: async (organizationId, sessionId) => {
+          touched.push({ organizationId, sessionId });
+        },
+        findApprovedTeacher: async () => null,
+        updateSessionTeacher: async () => undefined,
+        listApprovedTeachers: async () => [],
+        listAvailableParticipants: async () => [],
+        findParticipant: async () => null,
+        insertParticipant: async () => {
+          throw new Error("not used");
+        },
+        listSessionSnapshots: async () => [],
+        insertSessionSnapshot: async () => undefined,
+      },
+    );
+
+    expect(deleted).toEqual([
+      {
+        organizationId: "org-1",
+        sessionId: "session-1",
+        snapshotId: "snapshot-1",
+      },
+    ]);
+    expect(touched).toEqual([
+      { organizationId: "org-1", sessionId: "session-1" },
     ]);
   });
 });

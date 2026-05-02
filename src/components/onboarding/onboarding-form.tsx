@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
+import { LogoutButton } from "@/components/auth/logout-button";
 import {
   type OnboardingActionState,
   acceptInviteOnboardingAction,
@@ -16,7 +18,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-full bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-accent-ink)] transition disabled:cursor-not-allowed disabled:opacity-70"
+      className="h-[60px] w-full rounded-[30px] bg-[#ffec1d] text-[20px] font-extrabold text-black shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? "기관 생성 중..." : "기관 만들기"}
     </button>
@@ -30,7 +32,7 @@ function InviteSubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm font-semibold text-[var(--color-text-primary)] transition disabled:cursor-not-allowed disabled:opacity-70"
+      className="h-12 rounded-[24px] bg-[#ffec1d] px-6 text-[16px] font-extrabold text-black shadow-[0_3px_3px_rgba(0,0,0,0.2)] transition disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? "초대 확인 중..." : "기존 기관 참여"}
     </button>
@@ -39,7 +41,28 @@ function InviteSubmitButton() {
 
 const initialState: OnboardingActionState = {};
 
-export function OnboardingForm() {
+function BrandMark({ className = "h-[76px] w-[82px]" }: { className?: string }) {
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      <Image
+        src="/figma-assets/login-brand-mark.png"
+        alt=""
+        width={1536}
+        height={1024}
+        priority
+        className="absolute max-w-none"
+        style={{
+          height: "186.67%",
+          left: "-62.17%",
+          top: "-35.24%",
+          width: "223.57%",
+        }}
+      />
+    </div>
+  );
+}
+
+export function OnboardingForm({ email }: { email?: string | null }) {
   const [state, formAction] = useActionState<OnboardingActionState, FormData>(
     createOrganizationOnboardingAction,
     initialState,
@@ -53,147 +76,153 @@ export function OnboardingForm() {
   );
 
   return (
-    <main className="flex min-h-screen flex-1 flex-col bg-[var(--color-background)]">
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-5 py-6 sm:px-8 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8 lg:px-10 lg:py-10">
-        <aside className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-panel">
-          <div className="rounded-[22px] bg-[var(--color-accent-surface)] px-4 py-4 text-[var(--color-accent-ink)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em]">
-              Organization onboarding
-            </p>
-            <h1 className="mt-2 text-2xl font-bold tracking-[-0.04em]">
-              새 기관을 만들거나 기존 기관에 참여합니다.
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-[color:rgba(31,26,23,0.78)]">
-              가입 직후 바로 새 기관을 만들 수도 있고, 운영자가 전달한 초대
-              토큰으로 기존 기관에 합류할 수도 있습니다.
-            </p>
-          </div>
+    <main className="min-h-screen bg-[#f6f1e8] px-4 pb-8 pt-3 text-[#111111] sm:px-8">
+      <header className="mx-auto flex w-full max-w-[1360px] flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-center">
+          <BrandMark />
+          <h1 className="ml-2 flex items-baseline gap-2 whitespace-nowrap text-[42px] font-black leading-none sm:text-[60px]">
+            <span
+              style={{
+                fontFamily:
+                  "'Gemunu Libre', Impact, 'Arial Black', var(--font-ui), sans-serif",
+              }}
+            >
+              DURE
+            </span>
+            <span className="text-[24px] font-black sm:text-[30px]">: 두레</span>
+          </h1>
+        </div>
 
-          <div className="mt-4 rounded-[22px] bg-[var(--color-surface-alt)] p-4">
-            <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-              가능한 시작 방식
-            </p>
-            <ul className="mt-2 space-y-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-              <li>새 기관과 첫 마을을 직접 생성하기</li>
-              <li>초대 토큰으로 기존 기관 membership 받기</li>
-              <li>가입 이후 설정 화면에서 사업, 수업, 강사 관리 이어가기</li>
-            </ul>
-          </div>
-        </aside>
-
-        <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-panel sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-text-secondary)]">
-            Step 2 onboarding
+        <div className="flex flex-col items-start text-[16px] leading-7 text-black sm:items-end sm:pt-4 sm:text-[20px]">
+          <p>
+            {email ?? "example1@gmail.com"}{" "}
+            <span className="font-semibold text-[#386665]">(운영자)</span>
           </p>
-          <h2 className="mt-3 text-4xl font-bold tracking-[-0.05em] text-[var(--color-text-primary)] sm:text-5xl">
-            시작 방식을 고릅니다.
+          <div className="mt-1 w-[75px] border-t-2 border-[#555555]" />
+          <LogoutButton email={null} tone="surface" variant="compact" />
+        </div>
+      </header>
+
+      <section className="mx-auto mt-3 flex min-h-[calc(100vh-9rem)] w-full max-w-[1347px] flex-col rounded-[34px] bg-[#fffdf8] px-4 py-10 shadow-[0_0_16px_rgba(255,255,255,0.55)] sm:rounded-[50px] sm:px-8 lg:px-[clamp(5rem,14vw,12.5rem)]">
+        <div className="flex items-center justify-center gap-4">
+          <Image
+            src="/figma-assets/organization-footsteps.png"
+            alt=""
+            width={60}
+            height={60}
+            className="size-[48px] sm:size-[60px]"
+          />
+          <h2 className="text-[28px] font-extrabold leading-none sm:text-[35px]">
+            두레<span className="text-[22px] sm:text-[25px]">에서의</span> 첫 걸음
           </h2>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--color-text-secondary)]">
-            기존 기관에 들어가고 싶은 사용자는 초대 토큰으로 바로 참여하고,
-            새 운영 단위를 만드는 사용자는 기관과 첫 마을을 직접 생성합니다.
-          </p>
+        </div>
 
-          <div className="mt-8 grid gap-6 xl:grid-cols-2">
-            <div className="rounded-[24px] bg-[var(--color-surface-alt)] p-5">
-              <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">
+        <div className="mx-auto mt-12 flex w-full max-w-[947px] flex-col gap-8">
+          <div className="rounded-[30px] border border-[#555555] bg-[#fffdf8] px-3 py-3 shadow-[0_3px_3px_rgba(0,0,0,0.18)]">
+            <div className="flex h-8 items-center gap-2 border-b border-[#bdb8af] px-1 pb-3">
+              <Image
+                src="/figma-assets/organization-chevron-down.png"
+                alt=""
+                width={35}
+                height={35}
+                className="size-[28px]"
+              />
+              <p className="text-[20px] font-extrabold sm:text-[25px]">
                 새 기관 만들기
               </p>
-              <p className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-                현재 사용자를 첫 운영자로 등록하고, 기관과 첫 마을을 함께
-                만듭니다.
-              </p>
-
-              <form action={formAction} className="mt-6 grid gap-4">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                    기관 이름
-                  </span>
-                  <input
-                    type="text"
-                    name="organizationName"
-                    className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-surface)]"
-                    placeholder="다도리인 교육 센터"
-                    required
-                  />
-                  {state.fieldErrors?.organizationName ? (
-                    <p className="text-sm text-[var(--color-danger)]">
-                      {state.fieldErrors.organizationName.join(" ")}
-                    </p>
-                  ) : null}
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                    첫 번째 마을 이름
-                  </span>
-                  <input
-                    type="text"
-                    name="firstVillageName"
-                    className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-surface)]"
-                    placeholder="동네 배움터"
-                    required
-                  />
-                  {state.fieldErrors?.firstVillageName ? (
-                    <p className="text-sm text-[var(--color-danger)]">
-                      {state.fieldErrors.firstVillageName.join(" ")}
-                    </p>
-                  ) : null}
-                </label>
-
-                {state.message ? (
-                  <p className="rounded-[18px] bg-[var(--color-surface)] px-4 py-3 text-sm leading-6 text-[var(--color-text-secondary)]">
-                    {state.message}
-                  </p>
-                ) : null}
-
-                <div className="mt-2">
-                  <SubmitButton />
-                </div>
-              </form>
             </div>
 
-            <div className="rounded-[24px] bg-[var(--color-surface-alt)] p-5">
-              <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--color-text-primary)]">
-                기존 기관 참여
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-                운영자가 공유한 초대 토큰을 입력하면, 기존 기관 소속으로 바로
-                들어갑니다.
-              </p>
-
-              <form action={inviteAction} className="mt-6 grid gap-4">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                    초대 토큰
-                  </span>
-                  <input
-                    type="text"
-                    name="inviteToken"
-                    className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-surface)]"
-                    placeholder="c27da9ba-dc9a-494b-8742-8ad3e42671d3"
-                    required
-                  />
-                  {inviteState.fieldErrors?.inviteToken ? (
-                    <p className="text-sm text-[var(--color-danger)]">
-                      {inviteState.fieldErrors.inviteToken.join(" ")}
-                    </p>
-                  ) : null}
-                </label>
-
-                {inviteState.message ? (
-                  <p className="rounded-[18px] bg-[var(--color-surface)] px-4 py-3 text-sm leading-6 text-[var(--color-text-secondary)]">
-                    {inviteState.message}
+            <form action={formAction} className="mt-6 flex flex-col gap-6">
+              <label className="flex flex-col gap-3">
+                <span className="text-[18px] font-semibold text-black sm:text-[20px]">
+                  기관 이름
+                </span>
+                <input
+                  type="text"
+                  name="organizationName"
+                  className="h-[60px] rounded-[15px] border border-[#f3eadd] bg-white px-4 text-[20px] font-semibold text-black outline-none transition focus:border-[#555555] focus:ring-2 focus:ring-[#ffec1d] sm:text-[25px]"
+                  placeholder="예시 기관"
+                  required
+                />
+                {state.fieldErrors?.organizationName ? (
+                  <p className="text-sm text-[var(--color-danger)]">
+                    {state.fieldErrors.organizationName.join(" ")}
                   </p>
                 ) : null}
+              </label>
 
-                <div className="mt-2">
-                  <InviteSubmitButton />
-                </div>
-              </form>
-            </div>
+              <label className="flex flex-col gap-3">
+                <span className="text-[18px] font-semibold text-black sm:text-[20px]">
+                  첫 번째 마을 이름
+                </span>
+                <input
+                  type="text"
+                  name="firstVillageName"
+                  className="h-[60px] rounded-[15px] border border-[#f3eadd] bg-white px-4 text-[20px] font-semibold text-black outline-none transition focus:border-[#555555] focus:ring-2 focus:ring-[#ffec1d] sm:text-[25px]"
+                  placeholder="예시 마을"
+                  required
+                />
+                {state.fieldErrors?.firstVillageName ? (
+                  <p className="text-sm text-[var(--color-danger)]">
+                    {state.fieldErrors.firstVillageName.join(" ")}
+                  </p>
+                ) : null}
+              </label>
+
+              {state.message ? (
+                <p className="rounded-[18px] bg-[#f6f1e8] px-4 py-3 text-sm leading-6 text-[#555555]">
+                  {state.message}
+                </p>
+              ) : null}
+
+              <SubmitButton />
+            </form>
           </div>
-        </section>
-      </div>
+
+          <details className="group rounded-[30px] border border-[#555555] bg-[#fffdf8] px-4 py-3">
+            <summary className="flex h-11 cursor-pointer list-none items-center gap-3 text-[20px] font-extrabold marker:content-none sm:text-[25px]">
+              <Image
+                src="/figma-assets/organization-chevron-right.png"
+                alt=""
+                width={35}
+                height={35}
+                className="size-[28px] transition group-open:rotate-90"
+              />
+              기존 기관으로 참여하기
+            </summary>
+
+            <form action={inviteAction} className="mt-5 flex flex-col gap-4 border-t border-[#bdb8af] pt-5">
+              <label className="flex flex-col gap-3">
+                <span className="text-[18px] font-semibold text-black">
+                  초대 토큰
+                </span>
+                <input
+                  type="text"
+                  name="inviteToken"
+                  className="h-[56px] rounded-[15px] border border-[#f3eadd] bg-white px-4 text-[18px] font-semibold text-black outline-none transition focus:border-[#555555] focus:ring-2 focus:ring-[#ffec1d]"
+                  placeholder="c27da9ba-dc9a-494b-8742-8ad3e42671d3"
+                  required
+                />
+                {inviteState.fieldErrors?.inviteToken ? (
+                  <p className="text-sm text-[var(--color-danger)]">
+                    {inviteState.fieldErrors.inviteToken.join(" ")}
+                  </p>
+                ) : null}
+              </label>
+
+              {inviteState.message ? (
+                <p className="rounded-[18px] bg-[#f6f1e8] px-4 py-3 text-sm leading-6 text-[#555555]">
+                  {inviteState.message}
+                </p>
+              ) : null}
+
+              <div>
+                <InviteSubmitButton />
+              </div>
+            </form>
+          </details>
+        </div>
+      </section>
     </main>
   );
 }
